@@ -1,0 +1,53 @@
+import re
+import hashlib
+
+def check_password_strength(password):
+    length_error = len(password) < 8
+    lowercase_error = re.search(r"[a-z]", password) is None
+    uppercase_error = re.search(r"[A-Z]", password) is None
+    digit_error = re.search(r"\d", password) is None
+    special_char_error = re.search(r"[!@#$%^&*()_+=\-{}\[\]:;\"'<>,.?/\\|`~]", password) is None
+
+   
+    score = 5 - sum([length_error, lowercase_error, uppercase_error, digit_error, special_char_error])
+
+    
+    if score == 5:
+        strength = "Strong"
+    elif 3 <= score < 5:
+        strength = "Moderate"
+    else:
+        strength = "Weak"
+
+   
+    suggestions = []
+    if length_error:
+        suggestions.append("Make it at least 8 characters long.")
+    if lowercase_error:
+        suggestions.append("Add lowercase letters.")
+    if uppercase_error:
+        suggestions.append("Add uppercase letters.")
+    if digit_error:
+        suggestions.append("Include at least one number.")
+    if special_char_error:
+        suggestions.append("Use special characters (!, @, #, etc.).")
+
+    return strength, suggestions
+
+def hash_password(password):
+    return hashlib.sha256(password.encode()).hexdigest()
+
+
+password = input("Enter a password to check: ")
+strength, suggestions = check_password_strength(password)
+
+print(f"\nPassword Strength: {strength}")
+if suggestions:
+    print("Suggestions:")
+    for s in suggestions:
+        print(f" - {s}")
+else:
+    print("Great job! Your password looks secure.")
+
+if strength == "Strong":
+    print(f"\nSHA-256 Hash of your password (for secure storage):\n{hash_password(password)}")        
